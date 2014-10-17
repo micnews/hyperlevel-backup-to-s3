@@ -39,9 +39,9 @@ module.exports = function(db) {
       if (err) return cb(err);
 
       var upload = new Uploader({
-        accessKey: awsAccessKeyId,
-        secretKey: awsSecretAccessKey,
-        bucket: awsBucket,
+        accessKey: awsConfig.accessKey,
+        secretKey: awsConfig.secretKey,
+        bucket: awsConfig.bucket,
         objectName: archive,
         stream: tar.pack(backupLocation)
       });
