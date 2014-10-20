@@ -1,9 +1,9 @@
 ## SYNOPSIS
-Backup level-hyper database and upload result to Amazon S3
+Backup [level-hyper](https://www.npmjs.org/package/level-hyper) database and upload result to Amazon S3
 
 ## USAGE
 
-Init:
+Setup:
 
 ```js
 var level = require('level-hyper');
@@ -21,7 +21,7 @@ backup('mybackup-1', {
   secretKey: awsSecretAccessKey,
   bucket: awsBucket
 }, function(err, result) {
-  // result : { uploaded: "backup-mybackup-1.tar.gz" }
+  console.log(result); // { uploaded: "backup-mybackup-1.tar.gz" }
 });
 ```
 
@@ -32,7 +32,7 @@ var dateFormat = require('dateformat');
 var name = 'database1-' + dateFormat(new Date(), 'yyyymmdd-hMMss');
 
 backup(name, conf, function(err, result) {
-  // result : { uploaded: "backup-database1-20141020-102450.tar.gz" }
+  console.log(result); // { uploaded: "backup-database1-20141020-102450.tar.gz" }
 });
 ```
 
