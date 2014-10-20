@@ -36,3 +36,6 @@ backup(name, conf, function(err, result) {
 });
 ```
 
+##LICENSE
+
+MIT
