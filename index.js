@@ -1,4 +1,5 @@
 var tar = require('tar-fs');
+var zlib = require('zlib');
 var rimraf = require('rimraf');
 var Uploader = require('s3-streaming-upload').Uploader;
 var pathUtils = require('path');
@@ -33,24 +34,28 @@ module.exports = function(db) {
     var location = db.location;
     var backupDirName = 'backup-' + backupName;
     var backupLocation = pathUtils.resolve(location, backupDirName);
-    var archive = backupDirName + '.tar';
+    var archive = backupDirName + '.tar.gz';
 
     db.db.liveBackup(backupName, function(err) {
       if (err) return cb(err);
+
+      var gzip = zlib.createGzip();
 
       var upload = new Uploader({
         accessKey: awsConfig.accessKey,
         secretKey: awsConfig.secretKey,
         bucket: awsConfig.bucket,
         objectName: archive,
-        stream: tar.pack(backupLocation)
+        stream: tar.pack(backupLocation).pipe(gzip)
       });
 
       upload.on('completed', function(err, res) {
         if (err) return cb(err);
 
         rimraf(backupLocation, function(err) {
-          console.log('rimraf error', err);
+          if (err) {
+            console.log('rimraf error', err);
+          }
         });
 
         return cb(null, { uploaded: archive });

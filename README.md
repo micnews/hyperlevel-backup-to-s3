@@ -20,8 +20,19 @@ backup('mybackup-1', {
   accessKey: awsAccessKeyId,
   secretKey: awsSecretAccessKey,
   bucket: awsBucket
-}, function(err) {
-  console.log('done');
+}, function(err, result) {
+  // result : { uploaded: "backup-mybackup-1.tar.gz" }
+});
+```
+
+Nice backup name example:
+
+```js
+var dateFormat = require('dateformat');
+var name = 'database1-' + dateFormat(new Date(), 'yyyymmdd-hMMss');
+
+backup(name, conf, function(err, result) {
+  // result : { uploaded: "backup-database1-20141020-102450.tar.gz" }
 });
 ```
 
