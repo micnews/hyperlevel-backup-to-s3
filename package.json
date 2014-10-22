@@ -1,10 +1,10 @@
 {
   "name": "hyperlevel-backup-to-s3",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Backup level-hyper db to Amazon S3",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/mocha/bin/mocha -t 5000 --recursive test --bail --colors --reporter spec --debug -u tdd --log true"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,10 @@
     "rimraf": "^2.2.8",
     "s3-streaming-upload": "^0.1.15",
     "tar-fs": "^1.2.0"
+  },
+  "devDependencies": {
+    "chai": "^1.9.2",
+    "mocha": "^2.0.0",
+    "mockery": "^1.4.0"
   }
 }

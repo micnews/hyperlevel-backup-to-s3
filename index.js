@@ -10,15 +10,15 @@ var awsConfigRequiredError = new Error('AWS config required (accessKey, secretKe
 
 module.exports = function(db) {
   /**
-   * Backup database and upload tar archive to S3
+   * Backup database and upload tar.gz archive to S3
    *
    * @param {string} backupName Backup name
-   * @param {string} awsConfig.accessKey AWS access key
-   * @param {string} awsConfig.secretKey AWS secret key
-   * @param {string} awsConfig.bucket AWS bucket name
+   * @param {string} opts.accessKey AWS access key
+   * @param {string} opts.secretKey AWS secret key
+   * @param {string} opts.bucket AWS bucket name
    * @param {function} cb Callback function
    */
-  return function(backupName, awsConfig, cb) {
+  return function(backupName, opts, cb) {
     if (!db.db || !db.db.liveBackup) {
       return cb(levelInstanceNotReadyError);
     }
@@ -27,7 +27,7 @@ module.exports = function(db) {
       return cb(levelInstanceNotReadyError);
     }
 
-    if (!awsConfig || !awsConfig.accessKey || !awsConfig.secretKey || !awsConfig.bucket) {
+    if (!opts || !opts.accessKey || !opts.secretKey || !opts.bucket) {
       return cb(awsConfigRequiredError);
     }
 
@@ -36,33 +36,40 @@ module.exports = function(db) {
     var backupLocation = pathUtils.resolve(location, backupDirName);
     var archive = backupDirName + '.tar.gz';
 
+    function removeBackup(cb) {
+      rimraf(backupLocation, function(err) {
+        if (err === Object(err)) {
+          console.log('rimraf error', err.stack);
+        }
+
+        return cb(err);
+      });
+    }
+
     db.db.liveBackup(backupName, function(err) {
       if (err) return cb(err);
 
       var gzip = zlib.createGzip();
 
       var upload = new Uploader({
-        accessKey: awsConfig.accessKey,
-        secretKey: awsConfig.secretKey,
-        bucket: awsConfig.bucket,
+        accessKey: opts.accessKey,
+        secretKey: opts.secretKey,
+        bucket: opts.bucket,
         objectName: archive,
         stream: tar.pack(backupLocation).pipe(gzip)
       });
 
       upload.on('completed', function(err, res) {
-        if (err) return cb(err);
-
-        rimraf(backupLocation, function(err) {
-          if (err) {
-            console.log('rimraf error', err);
-          }
+        removeBackup(function() {
+          if (err) return cb(err);
+          return cb(null, { uploaded: archive });
         });
-
-        return cb(null, { uploaded: archive });
       });
 
       upload.on('failed', function(err) {
-        return cb(err);
+        removeBackup(function() {
+          return cb(err);
+        });
       });
     });
   };
