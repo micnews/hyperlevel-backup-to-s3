@@ -1,6 +1,6 @@
 {
   "name": "hyperlevel-backup-to-s3",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Backup level-hyper db to Amazon S3",
   "main": "index.js",
   "scripts": {
