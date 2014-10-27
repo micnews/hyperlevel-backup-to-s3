@@ -4,7 +4,7 @@ var fs = require('fs');
 var expect = require('chai').expect;
 var pathUtils = require('path');
 var mockery = require('mockery');
-mockery.registerSubstitute('s3-streaming-upload', pathUtils.resolve(__dirname, './mocks/s3StreamingUpload'));
+mockery.registerSubstitute('streaming-s3', pathUtils.resolve(__dirname, './mocks/streamingS3'));
 mockery.enable({
     warnOnReplace: false,
     warnOnUnregistered: false,

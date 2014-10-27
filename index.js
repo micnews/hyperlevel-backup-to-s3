@@ -1,7 +1,7 @@
 var tar = require('tar-fs');
 var zlib = require('zlib');
 var rimraf = require('rimraf');
-var Uploader = require('s3-streaming-upload').Uploader;
+var StreamingS3 = require('streaming-s3');
 var pathUtils = require('path');
 
 var liveBackupFailedError = new Error('liveBackup failed');
@@ -51,24 +51,18 @@ module.exports = function(db) {
 
       var gzip = zlib.createGzip();
 
-      var upload = new Uploader({
-        accessKey: opts.accessKey,
-        secretKey: opts.secretKey,
-        bucket: opts.bucket,
-        objectName: archive,
-        stream: tar.pack(backupLocation).pipe(gzip)
-      });
-
-      upload.on('completed', function(err, res) {
+      var uploader = new StreamingS3(
+        tar.pack(backupLocation).pipe(gzip),
+        opts.accessKey,
+        opts.secretKey,
+      {
+        Bucket: opts.bucket,
+        Key: archive,
+        ContentType: 'application/x-compressed'
+      }, function(err, resp, stats) {
         removeBackup(function() {
           if (err) return cb(err);
           return cb(null, { uploaded: archive });
-        });
-      });
-
-      upload.on('failed', function(err) {
-        removeBackup(function() {
-          return cb(err);
         });
       });
     });
