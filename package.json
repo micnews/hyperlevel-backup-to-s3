@@ -18,7 +18,7 @@
   "homepage": "https://github.com/micnews/hyperlevel-backup-to-s3",
   "dependencies": {
     "rimraf": "^2.2.8",
-    "s3-streaming-upload": "^0.1.15",
+    "streaming-s3": "^0.3.4",
     "tar-fs": "^1.2.0"
   },
   "devDependencies": {
