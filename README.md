@@ -1,5 +1,8 @@
 ## SYNOPSIS
+
 Backup [level-hyper](https://www.npmjs.org/package/level-hyper) database and upload result to Amazon S3
+
+[![Build Status](https://travis-ci.org/micnews/hyperlevel-backup-to-s3.svg?branch=master)](https://travis-ci.org/micnews/hyperlevel-backup-to-s3)
 
 ## USAGE
 
